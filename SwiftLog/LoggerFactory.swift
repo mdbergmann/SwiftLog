@@ -6,19 +6,19 @@
 //  Copyright (c) 2014 Manfred Bergmann. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 
 public class LoggerFactory: NSObject {
     
     // this is for Singleton
-    public class var sharedInstance: ConfigurationFactory {
+    public class var sharedInstance: LoggerFactory {
         struct Static {
-            static var instance: ConfigurationFactory?
+            static var instance: LoggerFactory?
             static var token: dispatch_once_t = 0
         }
         
         dispatch_once(&Static.token) {
-            Static.instance = ConfigurationFactory()
+            Static.instance = LoggerFactory()
         }
         
         return Static.instance!

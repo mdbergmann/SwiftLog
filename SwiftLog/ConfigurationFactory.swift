@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Manfred Bergmann. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 
 public class ConfigurationFactory: NSObject {
     

@@ -6,16 +6,16 @@
 //  Copyright (c) 2014 Manfred Bergmann. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 
 public protocol Appender {
     func append(level: Level, loggerName: String, message: String)
 }
 
-public class ConsoleAppender: Appender {
+public class ConsoleAppender: NSObject, Appender {
     public var pattern: String = "[d] [[l]] [c] [m] - [M]"
     
-    public init() {}
+    public override init() {}
     
     private func computePattern(level: Level, loggerName: String, message: String) -> String {
         var outText = pattern.stringByReplacingOccurrencesOfString("[d]", withString: NSDate().description, options: NSStringCompareOptions.LiteralSearch, range: nil)
@@ -29,9 +29,12 @@ public class ConsoleAppender: Appender {
     }
     
     public func append(level: Level, loggerName: String, message: String) {
+        print(computePattern(level, loggerName: loggerName, message: message))
+        /*
         let handle = createHandle()
         handle.writeData(computePattern(level, loggerName: loggerName, message: message).dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!)
-        handle..closeFile()
+        handle.closeFile()
+        */
     }
 
     private func createHandle() -> NSFileHandle { return NSFileHandle.fileHandleWithStandardOutput() }
@@ -61,6 +64,6 @@ public class FileAppender: ConsoleAppender {
             NSFileManager.defaultManager().createFileAtPath(path!, contents: nil, attributes: nil)
         }
         
-        return NSFileHandle.fileHandleForWritingToURL(self.fileUrl!, error: nil)
+        return NSFileHandle(forWritingToURL:fileUrl!, error:nil)!
     }
 }
