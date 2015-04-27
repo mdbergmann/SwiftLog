@@ -53,17 +53,33 @@ public class Logger: NSObject {
         self.name = name
     }
     
-    private func doLog(level: Level, format: String, args: [String]) {
-        let msg = "".stringByAppendingFormat(format, args)
+    private func doLog(level: Level, msg: String, args: [String], functionName: String) {
+        let msg = "".stringByAppendingFormat(msg, args)
         
         let config = ConfigurationFactory.sharedInstance.get()
         for a in config.getAppenders() {
-            a.append(level, loggerName: name!, message: msg)
+            a.append(level, loggerName:name!, message:msg, functionName:functionName)
         }
     }
     
-    public func debug(format: String, args: String...) {
-        doLog(Level.Debug, format: format, args: args)
+    public func trace(functionName: String = __FUNCTION__, msg: String, args: String...) {
+        doLog(Level.Trace, msg:msg, args:args, functionName:functionName)
+    }
+
+    public func debug(functionName: String = __FUNCTION__, msg: String, args: String...) {
+        doLog(Level.Debug, msg:msg, args:args, functionName:functionName)
+    }
+
+    public func info(functionName: String = __FUNCTION__, msg: String, args: String...) {
+        doLog(Level.Info, msg:msg, args:args, functionName:functionName)
+    }
+
+    public func warn(functionName: String = __FUNCTION__, msg: String, args: String...) {
+        doLog(Level.Warn, msg:msg, args:args, functionName:functionName)
+    }
+
+    public func error(functionName: String = __FUNCTION__, msg: String, args: String...) {
+        doLog(Level.Error, msg:msg, args:args, functionName:functionName)
     }
 
     public func isDebug() -> Bool { return level.rawValue <= Level.Debug.rawValue }

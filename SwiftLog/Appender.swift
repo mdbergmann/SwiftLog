@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol Appender {
-    func append(level: Level, loggerName: String, message: String)
+    func append(level: Level, loggerName: String, message: String, functionName: String)
 }
 
 public class ConsoleAppender: NSObject, Appender {
@@ -17,19 +17,19 @@ public class ConsoleAppender: NSObject, Appender {
     
     public override init() {}
     
-    private func computePattern(level: Level, loggerName: String, message: String) -> String {
+    private func computePattern(level: Level, loggerName: String, message: String, functionName: String) -> String {
         var outText = pattern.stringByReplacingOccurrencesOfString("[d]", withString: NSDate().description, options: NSStringCompareOptions.LiteralSearch, range: nil)
         outText = outText.stringByReplacingOccurrencesOfString("[l]", withString: level.description(), options: NSStringCompareOptions.LiteralSearch, range: nil)
         outText = outText.stringByReplacingOccurrencesOfString("[c]", withString: loggerName, options: NSStringCompareOptions.LiteralSearch, range: nil)
-        outText = outText.stringByReplacingOccurrencesOfString("[m]", withString: "method", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        outText = outText.stringByReplacingOccurrencesOfString("[m]", withString: functionName, options: NSStringCompareOptions.LiteralSearch, range: nil)
         outText = outText.stringByReplacingOccurrencesOfString("[M]", withString: message, options: NSStringCompareOptions.LiteralSearch, range: nil)
         outText.extend("\n")
         
         return outText
     }
     
-    public func append(level: Level, loggerName: String, message: String) {
-        print(computePattern(level, loggerName: loggerName, message: message))
+    public func append(level: Level, loggerName: String, message: String, functionName: String) {
+        print(computePattern(level, loggerName:loggerName, message:message, functionName:functionName))
         /*
         let handle = createHandle()
         handle.writeData(computePattern(level, loggerName: loggerName, message: message).dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!)
@@ -47,12 +47,12 @@ public class FileAppender: ConsoleAppender {
         self.fileUrl = fileUrl
     }
     
-    override public func append(level: Level, loggerName: String, message: String) {
-        let text = computePattern(level, loggerName: loggerName, message: message)
+    override public func append(level: Level, loggerName: String, message: String, functionName: String) {
+        let text = computePattern(level, loggerName:loggerName, message:message, functionName:functionName)
         
         let handle = createHandle()
         handle.seekToEndOfFile()
-        handle.writeData(computePattern(level, loggerName: loggerName, message: message).dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!)
+        handle.writeData(computePattern(level, loggerName: loggerName, message:message, functionName:functionName).dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!)
         handle.closeFile()
     }
 
