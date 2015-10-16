@@ -36,6 +36,8 @@ public class ConfigurationFactory: NSObject {
 public class Configuration: NSObject {
     private var appenders: [Appender] = []
     
+    public var logLevel: Level = Level.Info
+    
     public func addAppender(app: Appender) {
         appenders.append(app)
     }
@@ -56,4 +58,19 @@ public class Configuration: NSObject {
     }
     
     func getAppenders() -> [Appender] { return appenders }
+}
+
+@objc public enum Level: Int {
+    case All = 1, Trace, Debug, Info, Warn, Error
+    
+    func description() -> String {
+        switch self {
+        case .All: return "ALL"
+        case .Trace: return "TRACE"
+        case .Debug: return "DEBUG"
+        case .Info: return "INFO"
+        case .Warn: return "WARN"
+        case .Error: return "ERROR"
+        }
+    }
 }

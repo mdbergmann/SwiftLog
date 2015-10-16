@@ -29,36 +29,26 @@ public class LoggerFactory: NSObject {
     }
 }
 
-@objc public enum Level: Int {
-    case All = 1, Trace, Debug, Info, Warn, Error
-
-    func description() -> String {
-        switch self {
-        case .All: return "ALL"
-        case .Trace: return "TRACE"
-        case .Debug: return "DEBUG"
-        case .Info: return "INFO"
-        case .Warn: return "WARN"
-        case .Error: return "ERROR"
-        }
-    }
-}
-
 public class Logger: NSObject {
-    var level: Level = Level.Info
-
     private var name: String?
+    
+    // initially take the log level from global config
+    // this requires to configure the global log level before anything else
+    public var logLevel: Level
     
     public init(name: String) {
         self.name = name
+        self.logLevel = ConfigurationFactory.sharedInstance.get().logLevel
     }
     
     @objc internal func doLog(level: Level, msg: String, args: [String], functionName: String) {
-        let msg = "".stringByAppendingFormat(msg, args)
-        
         let config = ConfigurationFactory.sharedInstance.get()
-        for a in config.getAppenders() {
-            a.append(level, loggerName:name!, message:msg, functionName:functionName)
+
+        if(level.rawValue >= logLevel.rawValue) {
+            let msg = "".stringByAppendingFormat(msg, args)
+            for a in config.getAppenders() {
+                a.append(level, loggerName:name!, message:msg, functionName:functionName)
+            }
         }
     }
     
@@ -82,5 +72,7 @@ public class Logger: NSObject {
         doLog(Level.Error, msg:msg, args:args, functionName:functionName)
     }
 
-    public func isDebug() -> Bool { return level.rawValue <= Level.Debug.rawValue }
+    public func isDebug() -> Bool {
+        return logLevel.rawValue <= Level.Debug.rawValue
+    }
 }
