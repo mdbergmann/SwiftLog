@@ -29,7 +29,7 @@ public class LoggerFactory: NSObject {
     }
 }
 
-public enum Level: Int {
+@objc public enum Level: Int {
     case All = 1, Trace, Debug, Info, Warn, Error
 
     func description() -> String {
@@ -53,7 +53,7 @@ public class Logger: NSObject {
         self.name = name
     }
     
-    private func doLog(level: Level, msg: String, args: [String], functionName: String) {
+    @objc internal func doLog(level: Level, msg: String, args: [String], functionName: String) {
         let msg = "".stringByAppendingFormat(msg, args)
         
         let config = ConfigurationFactory.sharedInstance.get()

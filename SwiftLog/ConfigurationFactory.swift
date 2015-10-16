@@ -40,5 +40,20 @@ public class Configuration: NSObject {
         appenders.append(app)
     }
     
+    public func removeAppender(app: Appender) {
+        var index = -1
+        var i = 0
+        appenders.forEach {
+            if($0 === app) {
+                index = i
+            }
+            i += 1
+        }
+        
+        if(index > 0) {
+            appenders.removeAtIndex(index)
+        }
+    }
+    
     func getAppenders() -> [Appender] { return appenders }
 }

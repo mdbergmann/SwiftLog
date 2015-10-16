@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol Appender {
+@objc public protocol Appender {
     func append(level: Level, loggerName: String, message: String, functionName: String)
 }
 
