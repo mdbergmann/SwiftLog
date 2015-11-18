@@ -10,15 +10,38 @@ import Foundation
 
 @objc public protocol Appender {
     func append(level: Level, loggerName: String, message: String, functionName: String)
+    func newCurrentDateTimeFormatter() -> NSDateFormatter
 }
 
-public class ConsoleAppender: NSObject, Appender {
-    public var pattern: String = "[d] [[l]] [c] [m] - [M]"
+class BaseAppender: NSObject, Appender {
+    private var dateFormatter: NSDateFormatter?
     
-    public override init() {}
+    internal override init() {
+        super.init()
+        self.dateFormatter = newCurrentDateTimeFormatter()
+    }
+    
+    internal func append(level: Level, loggerName: String, message: String, functionName: String) {
+    }
+    
+    internal func newCurrentDateTimeFormatter() -> NSDateFormatter {
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
+        dateFormatter.timeStyle = NSDateFormatterStyle.MediumStyle
+        return dateFormatter
+    }
+}
+
+
+class ConsoleAppender: BaseAppender {
+    internal var pattern: String = "[d] [[l]] [c] [m] - [M]"
+    
+    internal override init() {
+        super.init()
+    }
     
     private func computePattern(level: Level, loggerName: String, message: String, functionName: String) -> String {
-        var outText = pattern.stringByReplacingOccurrencesOfString("[d]", withString:NSDate().description, options:NSStringCompareOptions.LiteralSearch, range:nil)
+        var outText = pattern.stringByReplacingOccurrencesOfString("[d]", withString:dateFormatter!.stringFromDate(NSDate()), options:NSStringCompareOptions.LiteralSearch, range:nil)
         outText = outText.stringByReplacingOccurrencesOfString("[l]", withString:level.description(), options:NSStringCompareOptions.LiteralSearch, range:nil)
         outText = outText.stringByReplacingOccurrencesOfString("[c]", withString:loggerName, options:NSStringCompareOptions.LiteralSearch, range:nil)
         outText = outText.stringByReplacingOccurrencesOfString("[m]", withString:functionName, options:NSStringCompareOptions.LiteralSearch, range:nil)
@@ -28,21 +51,22 @@ public class ConsoleAppender: NSObject, Appender {
         return outText
     }
     
-    public func append(level: Level, loggerName: String, message: String, functionName: String) {
+    internal override func append(level: Level, loggerName: String, message: String, functionName: String) {
         print(computePattern(level, loggerName:loggerName, message:message, functionName:functionName), terminator: "")
     }
 
     private func createHandle() -> NSFileHandle { return NSFileHandle.fileHandleWithStandardOutput() }
 }
 
-public class FileAppender: ConsoleAppender {
+class FileAppender: ConsoleAppender {
     private var fileUrl: NSURL?
     
-    public init(fileUrl: NSURL) {
+    init(fileUrl: NSURL) {
+        super.init()
         self.fileUrl = fileUrl
     }
     
-    override public func append(level: Level, loggerName: String, message: String, functionName: String) {
+    override func append(level: Level, loggerName: String, message: String, functionName: String) {
         let handle = createHandle()
         handle.seekToEndOfFile()
         handle.writeData(computePattern(level, loggerName:loggerName, message:message, functionName:functionName).dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!)
