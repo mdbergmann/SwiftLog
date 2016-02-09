@@ -8,17 +8,19 @@
 
 import Cocoa
 import XCTest
-import SwiftLog
+@testable import SwiftLog
 
 class LoggerTest: XCTestCase {
 
-    let logFileUrl = NSURL(string: "file:///tmp/mylog.log")
+    let logFileUrl = NSURL(string: "file:///tmp/mylog.log")!
     
     override func setUp() {
         super.setUp()
         
         let c = ConfigurationFactory.sharedInstance.get()
+        c.logLevel = Level.Debug
         
+        c.addAppender(ConsoleAppender())
         c.addAppender(FileAppender(fileUrl: logFileUrl))
     }
     
@@ -27,18 +29,19 @@ class LoggerTest: XCTestCase {
     }
 
     func testCreateLogger() {
-        let l = Logger()
-        l.debug("Foo")
+        let l = Logger(name:"LoggerName")
+        l.debug(msg:"Foo")
         
         let fm = NSFileManager.defaultManager()
-        XCTAssertTrue(fm.fileExistsAtPath(logFileUrl.path), "")
         
-        let logText = String.stringWithContentsOfURL(logFileUrl, encoding: NSUTF8StringEncoding, error: nil)
-        /*
-        let lineComps = logText?.componentsSeparatedByString(" ")
-        XCTAssertEqual(lineComps[0], , "")
-        */
+        XCTAssertTrue(fm.fileExistsAtPath(logFileUrl.path!), "")
         
-        fm.removeItemAtURL(logFileUrl, error: nil)
+        if fm.fileExistsAtPath(logFileUrl.path!) {
+            let logText = try! String(contentsOfURL:logFileUrl, encoding:NSUTF8StringEncoding)
+            
+            XCTAssertTrue(logText.containsString("Foo"))
+            
+            try! fm.removeItemAtURL(logFileUrl)            
+        }
     }
 }

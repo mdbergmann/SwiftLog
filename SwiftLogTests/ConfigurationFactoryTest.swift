@@ -8,7 +8,7 @@
 
 import Cocoa
 import XCTest
-import SwiftLog
+@testable import SwiftLog
 
 class ConfigurationFactoryTest: XCTestCase {
 
