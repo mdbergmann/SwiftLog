@@ -38,6 +38,8 @@ public class Configuration: NSObject {
     
     public var logLevel: Level = Level.Info
     
+    public var doNeutralizeOutput: Bool = false
+    
     public func addAppender(app: Appender) {
         appenders.append(app)
     }

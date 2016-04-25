@@ -41,11 +41,22 @@ public class Logger: NSObject {
         self.logLevel = ConfigurationFactory.sharedInstance.get().logLevel
     }
     
+    /**
+     CWE-117: Improper Output Neutralization for Logs
+     */
+    internal func neutralizeOutput(text: String) -> String {
+        return text.stringByReplacingOccurrencesOfString("\r\n", withString: "CRNL")
+            .stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())!
+    }
+
     @objc internal func doLog(level: Level, msg: String, args: [String], functionName: String) {
         let config = ConfigurationFactory.sharedInstance.get()
 
         if(level.rawValue >= logLevel.rawValue) {
-            let msg = "".stringByAppendingFormat(msg, args)
+            var msg = "".stringByAppendingFormat(msg, args)
+            if config.doNeutralizeOutput {
+                msg = neutralizeOutput(msg)
+            }
             for a in config.getAppenders() {
                 a.append(level, loggerName:name!, message:msg, functionName:functionName)
             }

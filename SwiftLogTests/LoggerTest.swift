@@ -44,4 +44,29 @@ class LoggerTest: XCTestCase {
             try! fm.removeItemAtURL(logFileUrl)            
         }
     }
+    
+    func testIsDebugLevel() {
+        let l = Logger(name:"LoggerName")
+        XCTAssertTrue(l.isDebug())
+    }
+
+    func testOutputNeutralization() {
+        let l = Logger(name:"LoggerName")
+        
+        ConfigurationFactory.sharedInstance.get().doNeutralizeOutput = true
+        
+        l.debug(msg:"Foo\r\n. []>><<!!")
+        
+        let fm = NSFileManager.defaultManager()
+        
+        XCTAssertTrue(fm.fileExistsAtPath(logFileUrl.path!), "")
+        
+        if fm.fileExistsAtPath(logFileUrl.path!) {
+            let logText = try! String(contentsOfURL:logFileUrl, encoding:NSUTF8StringEncoding)
+            
+            XCTAssertTrue(logText.containsString("FooCRNL.%20%5B%5D%3E%3E%3C%3C!!"))
+            
+            try! fm.removeItemAtURL(logFileUrl)
+        }
+    }
 }
