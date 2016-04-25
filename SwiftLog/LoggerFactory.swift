@@ -63,23 +63,23 @@ public class Logger: NSObject {
         }
     }
     
-    public func trace(functionName: String = #function, msg: String, args: String...) {
+    public func trace(functionName: String = __FUNCTION__, msg: String, args: String...) {
         doLog(Level.Trace, msg:msg, args:args, functionName:functionName)
     }
 
-    public func debug(functionName: String = #function, msg: String, args: String...) {
+    public func debug(functionName: String = __FUNCTION__, msg: String, args: String...) {
         doLog(Level.Debug, msg:msg, args:args, functionName:functionName)
     }
 
-    public func info(functionName: String = #function, msg: String, args: String...) {
+    public func info(functionName: String = __FUNCTION__, msg: String, args: String...) {
         doLog(Level.Info, msg:msg, args:args, functionName:functionName)
     }
 
-    public func warn(functionName: String = #function, msg: String, args: String...) {
+    public func warn(functionName: String = __FUNCTION__, msg: String, args: String...) {
         doLog(Level.Warn, msg:msg, args:args, functionName:functionName)
     }
 
-    public func error(functionName: String = #function, msg: String, args: String...) {
+    public func error(functionName: String = __FUNCTION__, msg: String, args: String...) {
         doLog(Level.Error, msg:msg, args:args, functionName:functionName)
     }
 
