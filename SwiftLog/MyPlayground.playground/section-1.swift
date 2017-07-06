@@ -4,7 +4,7 @@ import Cocoa
 
 var str = "Hello, playground"
 
-func bubbleSort(inout arr: [Int], cl: (Int, Int) -> (Bool)) {
+func bubbleSort(arr: inout [Int], cl: (Int, Int) -> (Bool)) {
     for _ in arr {
         for l in 0...arr.count-2 {
             let swap = cl(arr[l], arr[l+1])
@@ -29,5 +29,5 @@ bubbleSort(&arr2, { i1, i2 in i1 > i2 })
 println(arr2)
 bubbleSort(&[1,2,3], { $0 < $1 })
 */
-bubbleSort(&arr) { $0 > $1 }
+bubbleSort(arr: &arr) { $0 > $1 }
 println(arr)

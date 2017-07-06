@@ -12,13 +12,13 @@ import XCTest
 
 class LoggerTest: XCTestCase {
 
-    let logFileUrl = NSURL(string: "file:///tmp/mylog.log")!
+    let logFileUrl = URL(string: "file:///tmp/mylog.log")!
     
     override func setUp() {
         super.setUp()
         
         let c = ConfigurationFactory.sharedInstance.get()
-        c.logLevel = Level.Debug
+        c.logLevel = Level.debug
         
         c.addAppender(ConsoleAppender())
         c.addAppender(FileAppender(fileUrl: logFileUrl))
@@ -32,16 +32,16 @@ class LoggerTest: XCTestCase {
         let l = Logger(name:"LoggerName")
         l.debug(msg:"Foo")
         
-        let fm = NSFileManager.defaultManager()
+        let fm = FileManager.default
         
-        XCTAssertTrue(fm.fileExistsAtPath(logFileUrl.path!), "")
+        XCTAssertTrue(fm.fileExists(atPath: logFileUrl.path), "")
         
-        if fm.fileExistsAtPath(logFileUrl.path!) {
-            let logText = try! String(contentsOfURL:logFileUrl, encoding:NSUTF8StringEncoding)
+        if fm.fileExists(atPath: logFileUrl.path) {
+            let logText = try! String(contentsOf:logFileUrl, encoding:String.Encoding.utf8)
             
-            XCTAssertTrue(logText.containsString("Foo"))
+            XCTAssertTrue(logText.contains("Foo"))
             
-            try! fm.removeItemAtURL(logFileUrl)            
+            try! fm.removeItem(at: logFileUrl)            
         }
     }
 }

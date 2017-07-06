@@ -8,41 +8,43 @@
 
 import Foundation
 
-public class ConfigurationFactory: NSObject {
+open class ConfigurationFactory: NSObject {
+    
+    struct Static {
+        static var instance: ConfigurationFactory?
+        static var token: Int = 0
+    }
+
+    private static var __once: () = {
+            Static.instance = ConfigurationFactory()
+        }()
     
     // this is for Singleton
-    public class var sharedInstance: ConfigurationFactory {
-        struct Static {
-            static var instance: ConfigurationFactory?
-            static var token: dispatch_once_t = 0
-        }
-
-        dispatch_once(&Static.token) {
-            Static.instance = ConfigurationFactory()
-        }
+    open class var sharedInstance: ConfigurationFactory {
+        _ = ConfigurationFactory.__once
 
         return Static.instance!
     }
 
-    private var config: Configuration?
+    fileprivate var config: Configuration?
     
-    public func initWith(config: Configuration) { self.config = config }
-    public func get() -> Configuration {
+    open func initWith(_ config: Configuration) { self.config = config }
+    open func get() -> Configuration {
         if config == nil { config = Configuration() }
         return config!
     }
 }
 
-public class Configuration: NSObject {
-    private var appenders: [Appender] = []
+open class Configuration: NSObject {
+    fileprivate var appenders: [Appender] = []
     
-    public var logLevel: Level = Level.Info
+    open var logLevel: Level = Level.info
     
-    public func addAppender(app: Appender) {
+    open func addAppender(_ app: Appender) {
         appenders.append(app)
     }
     
-    public func removeAppender(app: Appender) {
+    open func removeAppender(_ app: Appender) {
         var index = -1
         var i = 0
         appenders.forEach {
@@ -53,7 +55,7 @@ public class Configuration: NSObject {
         }
         
         if(index > 0) {
-            appenders.removeAtIndex(index)
+            appenders.remove(at: index)
         }
     }
     
@@ -61,16 +63,16 @@ public class Configuration: NSObject {
 }
 
 @objc public enum Level: Int {
-    case All = 1, Trace, Debug, Info, Warn, Error
+    case all = 1, trace, debug, info, warn, error
     
     func description() -> String {
         switch self {
-        case .All: return "ALL"
-        case .Trace: return "TRACE"
-        case .Debug: return "DEBUG"
-        case .Info: return "INFO"
-        case .Warn: return "WARN"
-        case .Error: return "ERROR"
+        case .all: return "ALL"
+        case .trace: return "TRACE"
+        case .debug: return "DEBUG"
+        case .info: return "INFO"
+        case .warn: return "WARN"
+        case .error: return "ERROR"
         }
     }
 }
