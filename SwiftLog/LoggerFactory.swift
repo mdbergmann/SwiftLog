@@ -43,11 +43,23 @@ open class Logger: NSObject {
         self.logLevel = ConfigurationFactory.sharedInstance.get().logLevel
     }
     
-    @objc internal func doLog(_ level: Level, msg: String, args: [String], functionName: String) {
+    /**
+     CWE-117: Improper Output Neutralization for Logs
+     */
+    internal func neutralizeOutput(text: String) -> String {
+        return text
+            .replacingOccurrences(of: "\r\n", with: "CRNL")
+            .addingPercentEncoding(withAllowedCharacters: CharacterSet.urlHostAllowed)!
+    }
+
+    internal func doLog(level: Level, msg: String, args: [String], functionName: String) {
         let config = ConfigurationFactory.sharedInstance.get()
 
         if(level.rawValue >= logLevel.rawValue) {
-            let msg = "".appendingFormat(msg, args)
+            var msg = "".appendingFormat(msg, args)
+            if config.doNeutralizeOutput {
+                msg = neutralizeOutput(text: msg)
+            }
             for a in config.getAppenders() {
                 a.append(level, loggerName:name!, message:msg, functionName:functionName)
             }
@@ -55,23 +67,23 @@ open class Logger: NSObject {
     }
     
     open func trace(_ functionName: String = #function, msg: String, args: String...) {
-        doLog(Level.trace, msg:msg, args:args, functionName:functionName)
+        doLog(level: Level.trace, msg:msg, args:args, functionName:functionName)
     }
 
     open func debug(_ functionName: String = #function, msg: String, args: String...) {
-        doLog(Level.debug, msg:msg, args:args, functionName:functionName)
+        doLog(level: Level.debug, msg:msg, args:args, functionName:functionName)
     }
 
     open func info(_ functionName: String = #function, msg: String, args: String...) {
-        doLog(Level.info, msg:msg, args:args, functionName:functionName)
+        doLog(level: Level.info, msg:msg, args:args, functionName:functionName)
     }
 
     open func warn(_ functionName: String = #function, msg: String, args: String...) {
-        doLog(Level.warn, msg:msg, args:args, functionName:functionName)
+        doLog(level: Level.warn, msg:msg, args:args, functionName:functionName)
     }
 
     open func error(_ functionName: String = #function, msg: String, args: String...) {
-        doLog(Level.error, msg:msg, args:args, functionName:functionName)
+        doLog(level: Level.error, msg:msg, args:args, functionName:functionName)
     }
 
     open func isDebug() -> Bool {
