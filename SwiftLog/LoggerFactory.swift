@@ -20,13 +20,13 @@ open class LoggerFactory: NSObject {
         }()
     
     // this is for Singleton
-    open class var sharedInstance: LoggerFactory {
+    @objc open class var sharedInstance: LoggerFactory {
         _ = LoggerFactory.__once
         
         return Static.instance!
     }
 
-    open func getLogger(_ name: String) -> Logger {
+    @objc open func getLogger(_ name: String) -> Logger {
         return Logger(name: name)
     }
 }
@@ -52,7 +52,7 @@ open class Logger: NSObject {
             .addingPercentEncoding(withAllowedCharacters: CharacterSet.urlHostAllowed)!
     }
 
-    internal func doLog(level: Level, msg: String, args: [String], functionName: String) {
+    @objc func doLog(_ level: Level, msg: String, args: [String], functionName: String) {
         let config = ConfigurationFactory.sharedInstance.get()
 
         if(level.rawValue >= logLevel.rawValue) {
@@ -67,23 +67,23 @@ open class Logger: NSObject {
     }
     
     open func trace(_ functionName: String = #function, msg: String, args: String...) {
-        doLog(level: Level.trace, msg:msg, args:args, functionName:functionName)
+        doLog(Level.trace, msg:msg, args:args, functionName:functionName)
     }
 
     open func debug(_ functionName: String = #function, msg: String, args: String...) {
-        doLog(level: Level.debug, msg:msg, args:args, functionName:functionName)
+        doLog(Level.debug, msg:msg, args:args, functionName:functionName)
     }
 
     open func info(_ functionName: String = #function, msg: String, args: String...) {
-        doLog(level: Level.info, msg:msg, args:args, functionName:functionName)
+        doLog(Level.info, msg:msg, args:args, functionName:functionName)
     }
 
     open func warn(_ functionName: String = #function, msg: String, args: String...) {
-        doLog(level: Level.warn, msg:msg, args:args, functionName:functionName)
+        doLog(Level.warn, msg:msg, args:args, functionName:functionName)
     }
 
     open func error(_ functionName: String = #function, msg: String, args: String...) {
-        doLog(level: Level.error, msg:msg, args:args, functionName:functionName)
+        doLog(Level.error, msg:msg, args:args, functionName:functionName)
     }
 
     open func isDebug() -> Bool {
